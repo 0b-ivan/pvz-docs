@@ -1,0 +1,61 @@
+$schema: https://api.gitbook.com/gitbook-docs.yaml
+site:
+  title: PVZM Docs
+  structure:
+    - type: section
+      key: section-4
+      title: Home
+      path: home
+      description: ""
+      icon: house
+      default: true
+      children:
+        - type: space
+          key: space-4
+          title: Home
+          path: landing-page
+          default: true
+          content:
+            directory: ./home
+    - type: section
+      key: section-1
+      title: Engine
+      path: engine
+      description: ""
+      icon: engine
+      children:
+        - type: space
+          key: space-1
+          title: Engine
+          path: api-reference
+          default: true
+          content:
+            directory: ./engine
+    - type: section
+      key: section-2
+      title: API Reference
+      path: api
+      description: ""
+      icon: brackets-curly
+      children:
+        - type: space
+          key: space-2
+          title: Backend
+          path: api-reference
+          default: true
+          content:
+            directory: ./backend
+    - type: section
+      key: section-3
+      title: Legal Information
+      path: legal
+      description: ""
+      icon: scale-balanced
+      children:
+        - type: space
+          key: space-3
+          title: Legal Information
+          path: legal-information
+          default: true
+          content:
+            directory: ./legal
