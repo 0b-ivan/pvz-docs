@@ -46,12 +46,12 @@ The documentation was verified against the active container implementation on **
 
 | Component | Implementation branch / PR | Verified contract | CI state |
 | --- | --- | --- | --- |
-| Frontend | `feature/docker-runtime` / `pvz-game#3` | multi-stage build, unprivileged Nginx, port `8080`, `GET /healthz` | Docker image build passed |
-| Backend | `feature/docker-runtime` / `pvz-backend#1` | Deno, non-root `deno`, port `3000`, `/data`, `GET /api/health` | Docker image build passed |
+| Frontend | container baseline merged via `pvz-game#3`; smoke test in `pvz-game#4` | multi-stage build, unprivileged Nginx, port `8080`, `GET /healthz`, `GET /game/` | build + runtime smoke test passed |
+| Backend | `feature/docker-runtime` / `pvz-backend#1` | Deno, non-root `deno`, port `3000`, `/data`, `GET /api/health`, restart persistence | build + runtime smoke test passed |
 
-These changes are still in open application PRs at the time of this verification. They are therefore **implemented and build-validated, but not yet part of the target branches**.
+The frontend container baseline is already part of `staging`; its smoke-test hardening is still in PR #4. The backend container and smoke-test changes remain in PR #1 at the time of this verification.
 
-The current Docker CI validates that an image can be built. It does **not yet** start the image and assert that its health endpoint becomes healthy. Runtime smoke tests belong in the next CI hardening step.
+The smoke tests now start the actual containers and assert their runtime contracts. The backend test additionally restarts the container with the same Docker volume and verifies persisted data remains available.
 
 The following is **not yet implemented** and therefore must not be treated as current production state:
 
@@ -61,7 +61,6 @@ The following is **not yet implemented** and therefore must not be treated as cu
 * Kubernetes manifests
 * staging/production cluster deployment
 * automated image promotion
-* container runtime smoke tests in CI
 
 ## Design principles
 
