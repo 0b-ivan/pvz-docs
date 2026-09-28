@@ -36,7 +36,7 @@ The long-term runtime platform is **K3s/Kubernetes**. Docker is the packaging fo
 | `pvz-game` | Browser game, static assets, PWA/mobile runtime |
 | `pvz-backend` | API, custom levels, persistence, optional external integrations |
 | `pvz-docs` | Architecture, API, engine and operational documentation |
-| `pvz-infra` | **Planned:** Compose integration environment, Kubernetes/Kustomize manifests and environment overlays |
+| `pvz-Infra` | Docker Compose integration, Kubernetes/Kustomize manifests, environment overlays and infra validation |
 
 See [Repository Boundaries](repository-boundaries.md) for the ownership rules.
 
@@ -48,6 +48,7 @@ The documentation was verified against the active container implementation on **
 | --- | --- | --- | --- |
 | Frontend | merged to `staging` via `pvz-game#3`, `#4`, `#5` | multi-stage build, unprivileged Nginx, port `8080`, `GET /healthz`, runtime `PVZ_BACKEND_URL`, GHCR publishing | build + runtime + backend integration + registry publish passed |
 | Backend | merged to `main` via `pvz-backend#1`, `#2` | Deno, non-root `deno`, port `3000`, `/data`, `GET /api/health`, restart persistence, GHCR publishing | build + runtime + frontend integration + registry publish passed |
+| Infrastructure | merged via `pvz-Infra#1` | digest-pinned Compose, Kustomize base/overlays, Traefik routing, PVC contract | render + real published-image Compose smoke test passed |
 
 Both container implementations and their GHCR publishing workflows are now part of their target branches.
 
@@ -69,13 +70,23 @@ digest: sha256:81bb473de4ce31a2a2fdd34eb95f8e817fe47daea7a943eacb97371505bb5642
 
 Future infrastructure should prefer the digest when pinning an immutable deployment.
 
-The following is **not yet implemented** and therefore must not be treated as current production state:
+Infrastructure implementation now exists in `0b-ivan/pvz-Infra` and has passed its first CI validation:
 
-* `pvz-infra`
-* Docker Compose integration stack
-* Kubernetes manifests
-* staging/production cluster deployment
+* digest-pinned Docker Compose integration stack
+* real GHCR image pull and Compose startup smoke test
+* Kubernetes base manifests
+* staging and production Kustomize overlays
+* Traefik Ingress model with same-origin `/api` routing
+* backend PVC contract and `Recreate` strategy
+* rendered-manifest validation that rejects floating/unconfigured images
+
+The following is **not yet implemented** and must not be treated as current production state:
+
+* actual K3s staging deployment
+* real staging/production DNS hostnames
+* TLS/Cloudflare edge wiring
 * automated image promotion
+* production deployment
 
 ## Design principles
 
