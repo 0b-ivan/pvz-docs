@@ -218,7 +218,7 @@ No `latest` tag is required for deployment.
 
 ## Local integration
 
-The planned `pvz-infra/compose.yaml` will run the published artifacts together:
+The implemented `pvz-Infra/compose.yaml` runs the published artifacts together and is exercised in CI using the real GHCR digests:
 
 ```text
 localhost:8080 -> pvz-game:8080
@@ -227,4 +227,4 @@ localhost:3000 -> pvz-backend:3000
                      +--> named volume -> /data
 ```
 
-Compose is the integration test and developer convenience layer. Kubernetes remains the production target.
+Compose is the integration test and developer convenience layer. The infra CI logs into GHCR, starts both digest-pinned images, waits for health, and verifies frontend/backend runtime connectivity. Kubernetes remains the production target.
