@@ -29,22 +29,40 @@ update image reference in pvz-infra
 
 ## Image publication
 
-Each application repository should publish its own image.
+Each application repository publishes its own image to GHCR.
 
-Planned image names:
+Implemented image names:
 
 ```text
 ghcr.io/0b-ivan/pvz-game
 ghcr.io/0b-ivan/pvz-backend
 ```
 
-At minimum, publish a commit-addressable tag:
+The current workflows publish a full commit-addressable tag:
 
 ```text
-sha-54ee421...
+sha-<full-git-sha>
 ```
 
-A release may additionally receive a semantic version tag.
+Publish triggers:
+
+* `pvz-game`: push to `staging`
+* `pvz-backend`: push to `main`
+* pull requests execute the same build path but do not log in or push packages
+
+First published baseline:
+
+```text
+pvz-game
+  tag:    sha-51e3a642528275b9bfff79763c950563aae8a996
+  digest: sha256:ad652f80c6d7df441cdfcb298db328cfe67bc103ba794c60f10085c4d2af7cbd
+
+pvz-backend
+  tag:    sha-627d39263f5599bf762d21ac700018c8647782f8
+  digest: sha256:81bb473de4ce31a2a2fdd34eb95f8e817fe47daea7a943eacb97371505bb5642
+```
+
+A release may additionally receive a semantic version tag later.
 
 Do not deploy mutable `latest` tags to production.
 
@@ -109,7 +127,7 @@ Application repositories:
 1. lint/static checks
 2. tests where available
 3. Docker build
-4. image publish after approved merge
+4. image publish after approved merge ✅
 5. optional vulnerability/SBOM checks
 
 Infrastructure repository:

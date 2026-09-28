@@ -46,18 +46,31 @@ The documentation was verified against the active container implementation on **
 
 | Component | Implementation branch / PR | Verified contract | CI state |
 | --- | --- | --- | --- |
-| Frontend | container baseline merged via `pvz-game#3`; runtime/integration work in `pvz-game#4` | multi-stage build, unprivileged Nginx, port `8080`, `GET /healthz`, runtime `PVZ_BACKEND_URL` | build + runtime + backend integration tests passed |
-| Backend | `feature/docker-runtime` / `pvz-backend#1` | Deno, non-root `deno`, port `3000`, `/data`, `GET /api/health`, restart persistence | build + runtime + frontend integration tests passed |
+| Frontend | merged to `staging` via `pvz-game#3`, `#4`, `#5` | multi-stage build, unprivileged Nginx, port `8080`, `GET /healthz`, runtime `PVZ_BACKEND_URL`, GHCR publishing | build + runtime + backend integration + registry publish passed |
+| Backend | merged to `main` via `pvz-backend#1`, `#2` | Deno, non-root `deno`, port `3000`, `/data`, `GET /api/health`, restart persistence, GHCR publishing | build + runtime + frontend integration + registry publish passed |
 
-The frontend container baseline is already part of `staging`; its smoke-test hardening is still in PR #4. The backend container and smoke-test changes remain in PR #1 at the time of this verification.
+Both container implementations and their GHCR publishing workflows are now part of their target branches.
 
 The smoke tests now start the actual containers and assert their runtime contracts. The backend test additionally restarts the container with the same Docker volume and verifies persisted data remains available.
 
 The frontend/backend integration test now builds both application images together, starts them simultaneously, verifies the frontend runtime configuration points to the selected backend, calls the real `/api/levels` route with a browser Origin, and validates CORS plus preflight behavior.
 
+## Published container baseline
+
+The first registry-published baseline is:
+
+```text
+ghcr.io/0b-ivan/pvz-game:sha-51e3a642528275b9bfff79763c950563aae8a996
+digest: sha256:ad652f80c6d7df441cdfcb298db328cfe67bc103ba794c60f10085c4d2af7cbd
+
+ghcr.io/0b-ivan/pvz-backend:sha-627d39263f5599bf762d21ac700018c8647782f8
+digest: sha256:81bb473de4ce31a2a2fdd34eb95f8e817fe47daea7a943eacb97371505bb5642
+```
+
+Future infrastructure should prefer the digest when pinning an immutable deployment.
+
 The following is **not yet implemented** and therefore must not be treated as current production state:
 
-* GHCR publishing
 * `pvz-infra`
 * Docker Compose integration stack
 * Kubernetes manifests

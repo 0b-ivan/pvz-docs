@@ -186,23 +186,35 @@ Do not commit credentials into:
 * Kustomize bases
 * Git history
 
-## Image naming
+## Image publication
 
-The intended registry is GitHub Container Registry:
+GitHub Container Registry is now the implemented application registry:
 
 ```text
 ghcr.io/0b-ivan/pvz-game:<tag>
 ghcr.io/0b-ivan/pvz-backend:<tag>
 ```
 
-Recommended immutable references:
+Every merge to the configured publish branch produces a full-SHA tag. Recommended immutable references:
 
 ```text
 ghcr.io/0b-ivan/pvz-game:sha-<git-sha>
 ghcr.io/0b-ivan/pvz-backend:sha-<git-sha>
 ```
 
-Human-friendly version tags may also exist, but Kubernetes environments should ultimately pin a version that cannot silently change, preferably an image digest.
+Human-friendly version tags may also exist later, but Kubernetes environments should pin a version that cannot silently change, preferably an image digest.
+
+First published artifacts:
+
+```text
+ghcr.io/0b-ivan/pvz-game:sha-51e3a642528275b9bfff79763c950563aae8a996
+@sha256:ad652f80c6d7df441cdfcb298db328cfe67bc103ba794c60f10085c4d2af7cbd
+
+ghcr.io/0b-ivan/pvz-backend:sha-627d39263f5599bf762d21ac700018c8647782f8
+@sha256:81bb473de4ce31a2a2fdd34eb95f8e817fe47daea7a943eacb97371505bb5642
+```
+
+No `latest` tag is required for deployment.
 
 ## Local integration
 
