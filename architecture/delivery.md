@@ -20,7 +20,7 @@ merge
 publish immutable image to GHCR
    |
    v
-update image reference in pvz-infra
+update image reference in pvz-Infra
    |
    +--> staging
    |
@@ -68,7 +68,7 @@ Do not deploy mutable `latest` tags to production.
 
 ## Environment promotion
 
-Promotion should happen in `pvz-infra`, not by rebuilding the application.
+Promotion should happen in `pvz-Infra`, not by rebuilding the application.
 
 Example:
 
@@ -132,9 +132,11 @@ Application repositories:
 
 Infrastructure repository:
 
-1. Kustomize render validation
-2. schema validation
-3. policy checks
-4. staging deployment
-5. smoke tests
-6. explicit production promotion
+1. Kustomize render validation ✅
+2. Docker Compose render validation ✅
+3. published-image Compose smoke test ✅
+4. schema validation
+5. policy checks
+6. K3s staging deployment
+7. staging smoke tests
+8. explicit production promotion
