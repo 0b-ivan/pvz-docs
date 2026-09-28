@@ -4,6 +4,18 @@ Docker images are the deployment artifact for both application repositories. The
 
 ## Frontend image
 
+### Verified implementation
+
+The current implementation uses:
+
+```text
+build:   node:22-bookworm-slim
+runtime: nginxinc/nginx-unprivileged:1.27-alpine
+port:    8080
+```
+
+The build passes `BUILD_SHA` into the existing `CF_PAGES_COMMIT_SHA` build stamp so the container build does not depend on Cloudflare Pages being present.
+
 ### Runtime contract
 
 | Property | Value |
@@ -31,6 +43,19 @@ ok
 This endpoint only proves that the frontend web server is alive and serving requests. It does not prove that the backend is reachable.
 
 ## Backend image
+
+### Verified implementation
+
+The current implementation uses:
+
+```text
+runtime: denoland/deno:2.5.2
+user:    deno
+port:    3000
+volume:  /data
+```
+
+The backend intentionally does not use a container-local `.env` file. Deployment systems inject environment variables directly.
 
 ### Runtime contract
 
@@ -65,6 +90,25 @@ GET /api/health
 ```
 
 Kubernetes readiness/liveness probes should consume this existing route.
+
+## CI validation boundary
+
+Both application Dockerfiles have passed `docker build` in GitHub Actions.
+
+That proves:
+
+* Dockerfile syntax/build stages are valid
+* dependencies can be resolved during the image build
+* the final image can be assembled
+
+It does **not yet** prove:
+
+* the container reaches a healthy runtime state
+* the health endpoint responds after startup
+* frontend-to-backend connectivity works
+* persistence survives a backend restart
+
+Those checks should be added as container smoke tests and later as Compose/infrastructure integration tests.
 
 ## Minimal backend configuration
 
