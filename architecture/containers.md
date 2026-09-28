@@ -93,22 +93,38 @@ Kubernetes readiness/liveness probes should consume this existing route.
 
 ## CI validation boundary
 
-Both application Dockerfiles have passed `docker build` in GitHub Actions.
+Both application images now pass runtime smoke tests in GitHub Actions.
 
-That proves:
+Frontend validation covers:
 
-* Dockerfile syntax/build stages are valid
-* dependencies can be resolved during the image build
-* the final image can be assembled
+* Docker image build
+* real container startup
+* Docker HEALTHCHECK reaching `healthy`
+* `GET /healthz`
+* `GET /game/`
 
-It does **not yet** prove:
+Backend validation covers:
 
-* the container reaches a healthy runtime state
-* the health endpoint responds after startup
-* frontend-to-backend connectivity works
-* persistence survives a backend restart
+* Docker image build
+* real container startup
+* Docker HEALTHCHECK reaching `healthy`
+* `GET /api/health`
+* SQLite database creation below `/data`
+* persistence sentinel written to `/data`
+* container removal and recreation with the same Docker volume
+* health after restart
+* persistence still present after restart
 
-Those checks should be added as container smoke tests and later as Compose/infrastructure integration tests.
+The backend image also prewarms the native SQLite library during image build. Runtime startup therefore no longer depends on downloading `libsqlite3.so` from GitHub.
+
+The smoke tests still do **not** prove:
+
+* frontend-to-backend connectivity as one composed system
+* custom-level upload/download behavior across restart
+* browser gameplay behavior
+* Kubernetes Service/Ingress/PVC behavior
+
+Those belong in the planned Compose integration tests and later the `pvz-infra` staging deployment.
 
 ## Minimal backend configuration
 
