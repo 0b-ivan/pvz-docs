@@ -46,6 +46,20 @@ site:
           content:
             directory: ./backend
     - type: section
+      key: section-5
+      title: Architecture & Operations
+      path: architecture
+      description: "Containers, delivery and Kubernetes target architecture"
+      icon: diagram-project
+      children:
+        - type: space
+          key: space-5
+          title: Architecture & Operations
+          path: architecture
+          default: true
+          content:
+            directory: ./architecture
+    - type: section
       key: section-3
       title: Legal Information
       path: legal
