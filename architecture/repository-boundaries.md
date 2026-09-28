@@ -69,27 +69,29 @@ Owns:
 
 Documentation should explicitly distinguish current state from planned state.
 
-## `pvz-infra` — planned
+## `pvz-Infra`
 
-The fourth repository will own deployment intent.
+The fourth repository owns deployment intent.
 
-Expected responsibilities:
+Implemented layout:
 
 ```text
-pvz-infra/
+pvz-Infra/
 ├── compose.yaml
+├── .env.example
+├── .github/workflows/validate.yml
 ├── kubernetes/
 │   ├── base/
-│   │   ├── namespace.yaml
 │   │   ├── game/
-│   │   └── backend/
+│   │   ├── backend/
+│   │   └── ingress.yaml
 │   └── overlays/
 │       ├── staging/
 │       └── production/
 └── README.md
 ```
 
-It will own:
+It owns:
 
 * image references
 * namespaces
@@ -110,7 +112,7 @@ It should **not** contain copies of application source code.
 ```text
 pvz-game --------+
                  |
-                 +--> images --> pvz-infra --> K3s
+                 +--> images --> pvz-Infra --> K3s
                  |
 pvz-backend -----+
 
