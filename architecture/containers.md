@@ -4,6 +4,18 @@ Docker images are the deployment artifact for both application repositories. The
 
 ## Frontend image
 
+### Verified implementation
+
+The current implementation uses:
+
+```text
+build:   node:22-bookworm-slim
+runtime: nginxinc/nginx-unprivileged:1.27-alpine
+port:    8080
+```
+
+The build passes `BUILD_SHA` into the existing `CF_PAGES_COMMIT_SHA` build stamp so the container build does not depend on Cloudflare Pages being present.
+
 ### Runtime contract
 
 | Property | Value |
@@ -19,6 +31,18 @@ The build is multi-stage: Node tooling performs the static build, and the runtim
 
 The frontend should eventually be deployable with a read-only root filesystem. Any future feature that needs server-side mutable state belongs in the backend, not in the Nginx container.
 
+### Runtime backend configuration
+
+The frontend no longer hard-codes the upstream backend hostname. The container accepts:
+
+```text
+PVZ_BACKEND_URL=https://api.example.invalid
+```
+
+At startup, the Nginx container generates `/runtime-config.js`. The game loads this file before `Cfunction.js`, and `$User.Server.URL` uses the configured backend URL.
+
+`/runtime-config.js` is served with `no-store` and is explicitly excluded from service-worker caching. This allows one immutable frontend image to move between local, staging and production environments without rebuilding application assets.
+
 ### Health contract
 
 ```http
@@ -31,6 +55,19 @@ ok
 This endpoint only proves that the frontend web server is alive and serving requests. It does not prove that the backend is reachable.
 
 ## Backend image
+
+### Verified implementation
+
+The current implementation uses:
+
+```text
+runtime: denoland/deno:2.5.2
+user:    deno
+port:    3000
+volume:  /data
+```
+
+The backend intentionally does not use a container-local `.env` file. Deployment systems inject environment variables directly.
 
 ### Runtime contract
 
@@ -65,6 +102,49 @@ GET /api/health
 ```
 
 Kubernetes readiness/liveness probes should consume this existing route.
+
+## CI validation boundary
+
+Both application images now pass runtime smoke tests in GitHub Actions.
+
+Frontend validation covers:
+
+* Docker image build
+* real container startup
+* Docker HEALTHCHECK reaching `healthy`
+* `GET /healthz`
+* `GET /game/`
+
+Backend validation covers:
+
+* Docker image build
+* real container startup
+* Docker HEALTHCHECK reaching `healthy`
+* `GET /api/health`
+* SQLite database creation below `/data`
+* persistence sentinel written to `/data`
+* container removal and recreation with the same Docker volume
+* health after restart
+* persistence still present after restart
+
+The backend image also prewarms the native SQLite library during image build. Runtime startup therefore no longer depends on downloading `libsqlite3.so` from GitHub.
+
+The cross-repository integration test additionally proves:
+
+* frontend and backend images can run at the same time
+* frontend runtime configuration points to the selected backend
+* `GET /api/health` succeeds
+* `GET /api/levels` succeeds with the configured browser Origin
+* CORS response headers are correct
+* OPTIONS preflight succeeds
+
+The tests still do **not** prove:
+
+* custom-level upload/download behavior across restart as one end-to-end workflow
+* browser gameplay behavior
+* Kubernetes Service/Ingress/PVC behavior
+
+Those belong in the planned Compose integration tests and later the `pvz-infra` staging deployment.
 
 ## Minimal backend configuration
 
