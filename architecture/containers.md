@@ -31,6 +31,18 @@ The build is multi-stage: Node tooling performs the static build, and the runtim
 
 The frontend should eventually be deployable with a read-only root filesystem. Any future feature that needs server-side mutable state belongs in the backend, not in the Nginx container.
 
+### Runtime backend configuration
+
+The frontend no longer hard-codes the upstream backend hostname. The container accepts:
+
+```text
+PVZ_BACKEND_URL=https://api.example.invalid
+```
+
+At startup, the Nginx container generates `/runtime-config.js`. The game loads this file before `Cfunction.js`, and `$User.Server.URL` uses the configured backend URL.
+
+`/runtime-config.js` is served with `no-store` and is explicitly excluded from service-worker caching. This allows one immutable frontend image to move between local, staging and production environments without rebuilding application assets.
+
 ### Health contract
 
 ```http
@@ -117,10 +129,18 @@ Backend validation covers:
 
 The backend image also prewarms the native SQLite library during image build. Runtime startup therefore no longer depends on downloading `libsqlite3.so` from GitHub.
 
-The smoke tests still do **not** prove:
+The cross-repository integration test additionally proves:
 
-* frontend-to-backend connectivity as one composed system
-* custom-level upload/download behavior across restart
+* frontend and backend images can run at the same time
+* frontend runtime configuration points to the selected backend
+* `GET /api/health` succeeds
+* `GET /api/levels` succeeds with the configured browser Origin
+* CORS response headers are correct
+* OPTIONS preflight succeeds
+
+The tests still do **not** prove:
+
+* custom-level upload/download behavior across restart as one end-to-end workflow
 * browser gameplay behavior
 * Kubernetes Service/Ingress/PVC behavior
 
