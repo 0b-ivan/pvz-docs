@@ -42,11 +42,16 @@ See [Repository Boundaries](repository-boundaries.md) for the ownership rules.
 
 ## Current implementation status
 
-The following container work exists in open implementation branches/PRs and has already passed Docker image build validation:
+The documentation was verified against the active container implementation on **2026-09-28**.
 
-* Frontend: multi-stage build, unprivileged Nginx, port `8080`, `/healthz`
-* Backend: Deno image, non-root runtime, port `3000`, persistent `/data`, existing `/api/health`
-* Both application repositories have CI jobs that build their Docker images
+| Component | Implementation branch / PR | Verified contract | CI state |
+| --- | --- | --- | --- |
+| Frontend | `feature/docker-runtime` / `pvz-game#3` | multi-stage build, unprivileged Nginx, port `8080`, `GET /healthz` | Docker image build passed |
+| Backend | `feature/docker-runtime` / `pvz-backend#1` | Deno, non-root `deno`, port `3000`, `/data`, `GET /api/health` | Docker image build passed |
+
+These changes are still in open application PRs at the time of this verification. They are therefore **implemented and build-validated, but not yet part of the target branches**.
+
+The current Docker CI validates that an image can be built. It does **not yet** start the image and assert that its health endpoint becomes healthy. Runtime smoke tests belong in the next CI hardening step.
 
 The following is **not yet implemented** and therefore must not be treated as current production state:
 
@@ -56,6 +61,7 @@ The following is **not yet implemented** and therefore must not be treated as cu
 * Kubernetes manifests
 * staging/production cluster deployment
 * automated image promotion
+* container runtime smoke tests in CI
 
 ## Design principles
 
