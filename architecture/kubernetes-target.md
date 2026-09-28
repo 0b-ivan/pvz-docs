@@ -122,12 +122,11 @@ The infrastructure repository should reference Secrets without storing secret va
 
 Kustomize is preferred initially over Helm because there are only two internal workloads and the main differences are environment-specific values.
 
-Target layout:
+Implemented foundation layout:
 
 ```text
 kubernetes/
 ├── base/
-│   ├── namespace.yaml
 │   ├── game/
 │   │   ├── deployment.yaml
 │   │   ├── service.yaml
@@ -140,12 +139,20 @@ kubernetes/
 │   └── kustomization.yaml
 └── overlays/
     ├── staging/
+    │   ├── namespace.yaml
+    │   ├── game-config.yaml
+    │   ├── backend-config.yaml
     │   └── kustomization.yaml
     └── production/
+        ├── namespace.yaml
+        ├── game-config.yaml
+        ├── backend-config.yaml
         └── kustomization.yaml
 ```
 
-Base resources define application contracts. Overlays define environment differences such as hostnames, replica counts, storage sizes and image versions.
+Base resources define application contracts. Overlays define namespaces, runtime configuration, hostnames, replica counts and immutable image digests.
+
+The current overlays render successfully in CI. Their hostnames intentionally use `example.invalid`; they are not deployable as public environments until the real DNS names are chosen. Production starts with two frontend replicas. Backend remains one replica with `Recreate` and a ReadWriteOnce PVC.
 
 ## Traffic
 
