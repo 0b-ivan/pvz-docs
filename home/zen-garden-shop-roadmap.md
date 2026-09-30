@@ -33,7 +33,7 @@ Wichtig: C++-Quellcode und feste 800x600-Pixelkoordinaten werden nicht 1:1 über
 | Phase | Thema | Status |
 | --- | --- | --- |
 | 0 | Referenzanalyse & Asset-Inventar | In Arbeit |
-| 1 | PlayerProgress & Save-System | In Arbeit |
+| 1 | PlayerProgress & Save-System | PR [pvz-game#25](https://github.com/0b-ivan/pvz-game/pull/25) |
 | 2 | Economy & Inventar | Geplant |
 | 3 | Crazy Daves Shop | Geplant |
 | 4 | Zen-Garten MVP | Geplant |
@@ -78,13 +78,13 @@ Ziel ist eine zentrale, versionierte Persistenzschicht, auf der Shop und Zen-Gar
 
 ### TODO
 
-- [ ] `PlayerProgress.js` als zentrale Persistenzschicht hinzufügen.
-- [ ] Schema-Version 1 definieren.
-- [ ] Legacy-`level` und `levels` migrieren, ohne alte Keys zu löschen.
-- [ ] Persistenz gegen ungültiges JSON und unvollständige Daten härten.
-- [ ] bestehende Adventure-Speicherung mit PlayerProgress spiegeln.
-- [ ] automatisierte Migration-/Persistenztests hinzufügen.
-- [ ] CI für PlayerProgress-Tests aktivieren.
+- [x] `PlayerProgress.js` als zentrale Persistenzschicht hinzufügen.
+- [x] Schema-Version 1 definieren.
+- [x] Legacy-`level` und `levels` migrieren, ohne alte Keys zu löschen.
+- [x] Persistenz gegen ungültiges JSON, unvollständige Daten und Rollbacks härten.
+- [x] bestehende Adventure-Speicherung mit PlayerProgress spiegeln.
+- [x] automatisierte Migration-/Persistenztests hinzufügen.
+- [x] CI für PlayerProgress-Tests aktivieren.
 
 ### Definition of Done
 
